@@ -1,0 +1,256 @@
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Professional MIS Design System */
+
+@layer base {
+  :root {
+    --background: 220 26% 97%;
+    --foreground: 220 14% 11%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 220 14% 11%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 14% 11%;
+
+    --primary: 221 83% 53%;
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 220 14% 96%;
+    --secondary-foreground: 220 14% 11%;
+
+    --muted: 220 14% 96%;
+    --muted-foreground: 220 9% 46%;
+
+    --accent: 221 39% 11%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 40% 98%;
+
+    --warning: 38 92% 50%;
+    --warning-foreground: 48 96% 89%;
+
+    --success: 142 76% 36%;
+    --success-foreground: 355 100% 97%;
+
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 221 83% 53%;
+
+    --radius: 0.75rem;
+
+    --sidebar-background: 220 26% 14%;
+    --sidebar-foreground: 220 9% 89%;
+    --sidebar-primary: 221 83% 53%;
+    --sidebar-primary-foreground: 210 40% 98%;
+    --sidebar-accent: 220 26% 18%;
+    --sidebar-accent-foreground: 220 9% 89%;
+    --sidebar-border: 220 26% 18%;
+    --sidebar-ring: 221 83% 53%;
+
+    /* Custom MIS Colors */
+    --chart-1: 221 83% 53%;
+    --chart-2: 142 76% 36%;
+    --chart-3: 38 92% 50%;
+    --chart-4: 0 84% 60%;
+    --chart-5: 262 83% 58%;
+  }
+
+  .dark {
+    --background: 220 26% 9%;
+    --foreground: 220 9% 89%;
+
+    --card: 220 26% 12%;
+    --card-foreground: 220 9% 89%;
+
+    --popover: 220 26% 12%;
+    --popover-foreground: 220 9% 89%;
+
+    --primary: 221 83% 53%;
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 220 26% 18%;
+    --secondary-foreground: 220 9% 89%;
+
+    --muted: 220 26% 18%;
+    --muted-foreground: 220 9% 63%;
+
+    --accent: 220 26% 18%;
+    --accent-foreground: 220 9% 89%;
+
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 220 26% 18%;
+    --input: 220 26% 18%;
+    --ring: 221 83% 53%;
+
+    --sidebar-background: 220 26% 9%;
+    --sidebar-foreground: 220 9% 89%;
+    --sidebar-primary: 221 83% 53%;
+    --sidebar-primary-foreground: 210 40% 98%;
+    --sidebar-accent: 220 26% 12%;
+    --sidebar-accent-foreground: 220 9% 89%;
+    --sidebar-border: 220 26% 12%;
+    --sidebar-ring: 221 83% 53%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans;
+    /* Prevent horizontal scroll on mobile */
+    overflow-x: hidden;
+  }
+
+  /* Improved responsive text scaling */
+  html {
+    font-size: 14px;
+  }
+
+  @media (min-width: 640px) {
+    html {
+      font-size: 16px;
+    }
+  }
+
+/* Professional animations */
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease-in-out;
+  }
+
+  .animate-slide-up {
+    animation: slideUp 0.4s ease-out;
+  }
+
+  .hover-lift {
+    @apply transition-all duration-200 hover:shadow-lg hover:-translate-y-1;
+  }
+
+  .animation-delay-150 {
+    animation-delay: 150ms;
+  }
+
+  /* Gradient backgrounds */
+  .gradient-primary {
+    background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary)) 100%);
+  }
+
+  .gradient-success {
+    background: linear-gradient(135deg, hsl(var(--success)) 0%, hsl(142 76% 28%) 100%);
+  }
+
+  .gradient-warning {
+    background: linear-gradient(135deg, hsl(var(--warning)) 0%, hsl(35 91% 42%) 100%);
+  }
+
+  .gradient-destructive {
+    background: linear-gradient(135deg, hsl(var(--destructive)) 0%, hsl(0 84% 52%) 100%);
+  }
+
+  /* Mobile touch improvements */
+  button, [role="button"] {
+    touch-action: manipulation;
+  }
+
+  /* Improved focus states for accessibility */
+  button:focus-visible,
+  [role="button"]:focus-visible,
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Mobile-optimized scrollbar */
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+@media (min-width: 640px) {
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+}
+
+::-webkit-scrollbar-track {
+  background: hsl(var(--muted));
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground));
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--primary));
+}
+
+/* Responsive table improvements */
+@media (max-width: 768px) {
+  table {
+    font-size: 0.875rem;
+  }
+  
+  th, td {
+    padding: 0.5rem 0.25rem;
+  }
+}
+
+/* Fix modal and dialog positioning on mobile */
+@media (max-width: 640px) {
+  [data-radix-popper-content-wrapper] {
+    transform: none !important;
+    position: fixed !important;
+    inset: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+  }
+}
+
+/* Toast improvements for mobile */
+@media (max-width: 640px) {
+  [data-sonner-toaster] {
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  
+  [data-sonner-toast] {
+    margin: 0 0.75rem !important;
+    max-width: calc(100% - 1.5rem) !important;
+  }
+}
