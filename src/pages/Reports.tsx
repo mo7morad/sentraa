@@ -206,106 +206,150 @@ Created: ${new Date(report.created_at).toLocaleDateString()}
   const reportCategories = getReportsByCategory();
 
   return (
-    <div className="space-y-8 max-w-7xl mx-auto">
-      {/* Header */}
-      <div className="space-y-3 text-center">
-        <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-          Reports & Analytics
-        </h1>
-        <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-          Generate comprehensive insights and data-driven reports powered by AI analytics
-        </p>
-      </div>
-
-      {/* Stats Dashboard */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card className="bg-gradient-to-br from-blue-500/10 to-blue-600/5 border-blue-200/20 dark:border-blue-800/20">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div className="space-y-2">
-                <p className="text-sm font-medium text-muted-foreground">This Month</p>
-                {statsLoading ? (
-                  <div className="h-8 w-12 bg-muted rounded animate-pulse"></div>
-                ) : (
-                  <p className="text-3xl font-bold text-blue-600 dark:text-blue-400">{statsData?.thisMonthCount || 0}</p>
-                )}
-                <p className="text-xs text-muted-foreground">Reports Generated</p>
-              </div>
-              <div className="p-3 bg-blue-500/10 rounded-xl">
-                <FileBarChart className="w-6 h-6 text-blue-600 dark:text-blue-400" />
-              </div>
+    <div className="min-h-screen bg-gradient-to-br from-background via-background/95 to-muted/20">
+      <div className="space-y-8 max-w-7xl mx-auto px-4 py-8">
+        {/* Modern Header with animated background */}
+        <div className="relative text-center space-y-6 py-12">
+          <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-chart-2/5 to-chart-3/5 rounded-3xl blur-3xl opacity-30"></div>
+          <div className="relative z-10">
+            <div className="inline-flex items-center gap-3 mb-4 px-4 py-2 bg-primary/10 rounded-full border border-primary/20">
+              <FileBarChart className="w-5 h-5 text-primary animate-pulse" />
+              <span className="text-sm font-medium text-primary">AI-Powered Analytics</span>
             </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-gradient-to-br from-green-500/10 to-green-600/5 border-green-200/20 dark:border-green-800/20">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div className="space-y-2">
-                <p className="text-sm font-medium text-muted-foreground">Growth</p>
-                {statsLoading ? (
-                  <div className="h-8 w-12 bg-muted rounded animate-pulse"></div>
-                ) : (
-                  <p className="text-3xl font-bold text-green-600 dark:text-green-400">
-                    {statsData?.difference && statsData.difference > 0 ? '+' : ''}{statsData?.difference || 0}
-                  </p>
-                )}
-                <p className="text-xs text-muted-foreground">From Last Month</p>
-              </div>
-              <div className="p-3 bg-green-500/10 rounded-xl">
-                <BarChart3 className="w-6 h-6 text-green-600 dark:text-green-400" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-gradient-to-br from-purple-500/10 to-purple-600/5 border-purple-200/20 dark:border-purple-800/20">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div className="space-y-2">
-                <p className="text-sm font-medium text-muted-foreground">Total Reports</p>
-                {reportsLoading ? (
-                  <div className="h-8 w-12 bg-muted rounded animate-pulse"></div>
-                ) : (
-                  <p className="text-3xl font-bold text-purple-600 dark:text-purple-400">{reports?.length || 0}</p>
-                )}
-                <p className="text-xs text-muted-foreground">All Time</p>
-              </div>
-              <div className="p-3 bg-purple-500/10 rounded-xl">
-                <FileText className="w-6 h-6 text-purple-600 dark:text-purple-400" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Main Content with Tabs */}
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
-        <div className="flex justify-center">
-          <TabsList className="grid w-full grid-cols-2 max-w-md h-12 bg-muted/50 rounded-xl p-1">
-            <TabsTrigger value="generation" className="rounded-lg font-medium">
-              <div className="flex items-center gap-2">
-                <Download className="w-4 h-4" />
-                AI Generation
-              </div>
-            </TabsTrigger>
-            <TabsTrigger value="recent" className="rounded-lg font-medium">
-              <div className="flex items-center gap-2">
-                <FileText className="w-4 h-4" />
-                My Reports
-              </div>
-            </TabsTrigger>
-          </TabsList>
-        </div>
-
-        {/* Report Generation Tab */}
-        <TabsContent value="generation" className="space-y-8">
-          <div className="text-center space-y-4">
-            <h2 className="text-2xl font-semibold text-foreground">Generate AI-Powered Reports</h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
-              Choose from our comprehensive report categories below. Each report is generated using advanced AI analytics and automatically downloaded upon completion.
+            <h1 className="text-5xl font-bold bg-gradient-to-r from-primary via-chart-2 to-chart-3 bg-clip-text text-transparent mb-4">
+              Reports & Analytics
+            </h1>
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+              Generate comprehensive insights and data-driven reports with advanced AI analytics. 
+              Transform your data into actionable intelligence.
             </p>
           </div>
+        </div>
+
+        {/* Enhanced Stats Dashboard */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <Card className="group relative overflow-hidden bg-gradient-to-br from-chart-1/10 via-chart-1/5 to-background border-chart-1/20 hover:border-chart-1/40 transition-all duration-300 hover:shadow-lg hover:shadow-chart-1/10">
+            <div className="absolute inset-0 bg-gradient-to-br from-chart-1/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <CardContent className="relative p-8">
+              <div className="flex items-center justify-between">
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-chart-1 rounded-full animate-pulse"></div>
+                    <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">This Month</p>
+                  </div>
+                  {statsLoading ? (
+                    <div className="h-10 w-16 bg-muted rounded-lg animate-pulse"></div>
+                  ) : (
+                    <p className="text-4xl font-bold text-chart-1 tabular-nums">{statsData?.thisMonthCount || 0}</p>
+                  )}
+                  <p className="text-sm text-muted-foreground font-medium">Reports Generated</p>
+                </div>
+                <div className="p-4 bg-chart-1/10 rounded-2xl border border-chart-1/20 group-hover:scale-110 transition-transform duration-300">
+                  <FileBarChart className="w-8 h-8 text-chart-1" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="group relative overflow-hidden bg-gradient-to-br from-chart-2/10 via-chart-2/5 to-background border-chart-2/20 hover:border-chart-2/40 transition-all duration-300 hover:shadow-lg hover:shadow-chart-2/10">
+            <div className="absolute inset-0 bg-gradient-to-br from-chart-2/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <CardContent className="relative p-8">
+              <div className="flex items-center justify-between">
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-chart-2 rounded-full animate-pulse"></div>
+                    <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Growth Rate</p>
+                  </div>
+                  {statsLoading ? (
+                    <div className="h-10 w-16 bg-muted rounded-lg animate-pulse"></div>
+                  ) : (
+                    <p className="text-4xl font-bold text-chart-2 tabular-nums">
+                      {statsData?.difference && statsData.difference > 0 ? '+' : ''}{statsData?.difference || 0}
+                    </p>
+                  )}
+                  <p className="text-sm text-muted-foreground font-medium">From Last Month</p>
+                </div>
+                <div className="p-4 bg-chart-2/10 rounded-2xl border border-chart-2/20 group-hover:scale-110 transition-transform duration-300">
+                  <BarChart3 className="w-8 h-8 text-chart-2" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="group relative overflow-hidden bg-gradient-to-br from-chart-3/10 via-chart-3/5 to-background border-chart-3/20 hover:border-chart-3/40 transition-all duration-300 hover:shadow-lg hover:shadow-chart-3/10">
+            <div className="absolute inset-0 bg-gradient-to-br from-chart-3/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <CardContent className="relative p-8">
+              <div className="flex items-center justify-between">
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-chart-3 rounded-full animate-pulse"></div>
+                    <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Total Reports</p>
+                  </div>
+                  {reportsLoading ? (
+                    <div className="h-10 w-16 bg-muted rounded-lg animate-pulse"></div>
+                  ) : (
+                    <p className="text-4xl font-bold text-chart-3 tabular-nums">{reports?.length || 0}</p>
+                  )}
+                  <p className="text-sm text-muted-foreground font-medium">All Time</p>
+                </div>
+                <div className="p-4 bg-chart-3/10 rounded-2xl border border-chart-3/20 group-hover:scale-110 transition-transform duration-300">
+                  <FileText className="w-8 h-8 text-chart-3" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Enhanced Tabs Interface */}
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-10">
+          <div className="flex justify-center">
+            <div className="relative bg-muted/30 p-2 rounded-2xl border border-border/50">
+              <TabsList className="grid w-full grid-cols-2 max-w-lg h-14 bg-transparent rounded-xl p-0 gap-2">
+                <TabsTrigger 
+                  value="generation" 
+                  className="relative rounded-xl font-semibold text-base transition-all duration-300 data-[state=active]:bg-background data-[state=active]:shadow-lg data-[state=active]:shadow-primary/10 data-[state=active]:border data-[state=active]:border-primary/20"
+                >
+                  <div className="flex items-center gap-3 px-2">
+                    <div className="p-2 bg-primary/10 rounded-lg">
+                      <Download className="w-5 h-5 text-primary" />
+                    </div>
+                    <div className="text-left">
+                      <div className="font-semibold">AI Generation</div>
+                      <div className="text-xs text-muted-foreground">Create Reports</div>
+                    </div>
+                  </div>
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="recent" 
+                  className="relative rounded-xl font-semibold text-base transition-all duration-300 data-[state=active]:bg-background data-[state=active]:shadow-lg data-[state=active]:shadow-primary/10 data-[state=active]:border data-[state=active]:border-primary/20"
+                >
+                  <div className="flex items-center gap-3 px-2">
+                    <div className="p-2 bg-chart-2/10 rounded-lg">
+                      <FileText className="w-5 h-5 text-chart-2" />
+                    </div>
+                    <div className="text-left">
+                      <div className="font-semibold">My Reports</div>
+                      <div className="text-xs text-muted-foreground">{reports?.length || 0} Available</div>
+                    </div>
+                  </div>
+                </TabsTrigger>
+              </TabsList>
+            </div>
+          </div>
+
+          {/* Enhanced Report Generation Tab */}
+          <TabsContent value="generation" className="space-y-10">
+            <div className="text-center space-y-6 py-8">
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-primary/10 to-chart-2/10 rounded-full border border-primary/20">
+                <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
+                <span className="text-sm font-medium text-primary">AI Report Generation</span>
+              </div>
+              <h2 className="text-3xl font-bold text-foreground">Generate AI-Powered Reports</h2>
+              <p className="text-lg text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+                Choose from our comprehensive report categories below. Each report is generated using advanced AI analytics 
+                and automatically downloaded upon completion with detailed insights and visualizations.
+              </p>
+            </div>
           
           {/* Organized by Categories */}
           <div className="space-y-12">
@@ -333,17 +377,40 @@ Created: ${new Date(report.created_at).toLocaleDateString()}
                   </div>
                 </div>
                 
-                {/* Reports in this category */}
-                <div className="grid grid-cols-1 gap-4">
+                {/* Enhanced Reports Cards */}
+                <div className="grid grid-cols-1 gap-6">
                   {category.reports.map((report, index) => (
-                    <Card key={index} className="group hover:shadow-lg transition-all duration-300 border border-border/50 hover:border-primary/30">
-                      <CardContent className="p-6">
+                    <Card key={index} className="group relative overflow-hidden bg-gradient-to-br from-background to-muted/20 border border-border/50 hover:border-primary/30 transition-all duration-500 hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1">
+                      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-chart-2/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                      <CardContent className="relative p-8">
                         <div className="flex items-center justify-between">
-                          <div className="flex-1 space-y-2">
-                            <h4 className="text-lg font-semibold text-foreground group-hover:text-primary transition-colors">
-                              {report.name}
-                            </h4>
-                            <p className="text-sm text-muted-foreground leading-relaxed">
+                          <div className="flex-1 space-y-4">
+                            <div className="flex items-center gap-4">
+                              <div 
+                                className="p-3 rounded-xl border-2 transition-transform duration-300 group-hover:scale-110"
+                                style={{ 
+                                  backgroundColor: category.color + '15',
+                                  borderColor: category.color + '25'
+                                }}
+                              >
+                                {category.icon === 'Users' && <Users className="w-6 h-6" style={{ color: category.color }} />}
+                                {category.icon === 'Star' && <Star className="w-6 h-6" style={{ color: category.color }} />}
+                                {category.icon === 'MessageSquare' && <MessageSquare className="w-6 h-6" style={{ color: category.color }} />}
+                                {category.icon === 'Building2' && <Building2 className="w-6 h-6" style={{ color: category.color }} />}
+                                {!['Users', 'Star', 'MessageSquare', 'Building2'].includes(category.icon) && 
+                                  <FileText className="w-6 h-6" style={{ color: category.color }} />}
+                              </div>
+                              <div>
+                                <h4 className="text-xl font-bold text-foreground group-hover:text-primary transition-colors duration-300">
+                                  {report.name}
+                                </h4>
+                                <div className="flex items-center gap-2 mt-1">
+                                  <div className="w-1 h-1 bg-primary rounded-full"></div>
+                                  <span className="text-sm text-primary font-medium">{category.name}</span>
+                                </div>
+                              </div>
+                            </div>
+                            <p className="text-muted-foreground leading-relaxed pl-16">
                               {report.description}
                             </p>
                           </div>
@@ -351,19 +418,19 @@ Created: ${new Date(report.created_at).toLocaleDateString()}
                             size="lg" 
                             onClick={() => generateReport(report.name, report.categoryId)}
                             disabled={generatingReport === report.name}
-                            className="flex items-center gap-3 ml-6 flex-shrink-0 shadow-md hover:shadow-lg transition-all duration-200"
+                            className="flex items-center gap-3 ml-8 flex-shrink-0 px-8 py-4 text-base font-semibold bg-gradient-to-r from-primary to-chart-2 hover:from-primary/90 hover:to-chart-2/90 shadow-lg hover:shadow-xl hover:shadow-primary/20 transition-all duration-300 hover:scale-105"
                           >
                             {generatingReport === report.name ? (
-                              <div className="flex items-center gap-2">
+                              <div className="flex items-center gap-3">
                                 <div className="relative">
-                                  <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
+                                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
                                 </div>
-                                Generating...
+                                <span>Generating...</span>
                               </div>
                             ) : (
                               <>
-                                <Download className="w-4 h-4" />
-                                Generate with AI
+                                <Download className="w-5 h-5" />
+                                <span>Generate with AI</span>
                               </>
                             )}
                           </Button>
@@ -494,7 +561,8 @@ Created: ${new Date(report.created_at).toLocaleDateString()}
             </CardContent>
           </Card>
         </TabsContent>
-      </Tabs>
+        </Tabs>
+      </div>
     </div>
   );
 };

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { LogOut, User } from 'lucide-react';
@@ -12,6 +11,13 @@ const Header = () => {
   const { user, logout, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [isInitialLoad, setIsInitialLoad] = React.useState(true);
+
+  React.useEffect(() => {
+    // Give a moment for auth to initialize
+    const timer = setTimeout(() => setIsInitialLoad(false), 100);
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleLogout = () => {
     logout();
@@ -22,8 +28,8 @@ const Header = () => {
     navigate('/login');
   };
 
-  // Always render the header - show loading state when user is null but authentication is in progress
-  if (!isAuthenticated && !user) return null;
+  // Don't render header if not authenticated and not during initial load
+  if (!isAuthenticated && !user && !isInitialLoad) return null;
 
   return (
     <header className="bg-background border-b border-border px-3 sm:px-4 lg:px-6 py-3 sm:py-4">
