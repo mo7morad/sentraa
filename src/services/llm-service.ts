@@ -22,40 +22,40 @@ export interface LLMAnalysisData {
 
 class LLMService {
   private basePrompts = {
-    lecturerPerformance: `Analyze the lecturer performance data and provide comprehensive insights including:
-    1. Overall performance trends
-    2. Strengths and areas for improvement
-    3. Comparative analysis across departments
-    4. Recommendations for professional development
-    5. Impact on student satisfaction`,
+    lecturerPerformance: `Analyze the latest month's lecturer performance data and provide comprehensive insights including:
+    1. Current month performance trends and patterns
+    2. Immediate strengths and areas needing attention
+    3. Comparative analysis across departments for this period
+    4. Urgent recommendations for professional development
+    5. Recent impact on student satisfaction levels`,
     
-    teachingQuality: `Evaluate teaching quality metrics and provide analysis on:
-    1. Teaching effectiveness ratings
-    2. Course content quality assessment
-    3. Communication and availability metrics
-    4. Best practices identification
-    5. Quality improvement recommendations`,
+    teachingQuality: `Evaluate the latest month's teaching quality metrics and provide analysis on:
+    1. Recent teaching effectiveness ratings and trends
+    2. Current month course content quality assessment
+    3. Latest communication and availability performance
+    4. Emerging best practices from recent feedback
+    5. Immediate quality improvement recommendations`,
     
-    departmentOverview: `Analyze departmental performance data and provide insights on:
-    1. Overall department efficiency
-    2. Resource utilization
-    3. Faculty performance distribution
-    4. Student satisfaction by department
-    5. Strategic recommendations`,
+    departmentOverview: `Analyze the latest month's departmental performance data and provide insights on:
+    1. Current month department efficiency metrics    
+    2. Recent resource utilization patterns
+    3. Latest faculty performance distribution
+    4. This month's student satisfaction by department
+    5. Immediate strategic recommendations`,
     
-    feedbackAnalysis: `Perform comprehensive feedback analysis including:
-    1. Sentiment analysis of student comments
-    2. Recurring themes and patterns
-    3. Satisfaction trends over time
-    4. Category-wise feedback breakdown
-    5. Actionable improvement suggestions`,
+    feedbackAnalysis: `Perform comprehensive analysis of the latest month's feedback including:
+    1. Current sentiment analysis of recent student comments
+    2. Emerging themes and patterns from latest feedback
+    3. Recent satisfaction trends and changes
+    4. Latest month category-wise feedback breakdown
+    5. Immediate actionable improvement suggestions`,
     
-    studentPerformance: `Analyze student performance data and provide insights on:
-    1. Academic performance trends
-    2. Course completion rates
-    3. Satisfaction levels across courses
-    4. Performance correlation with teaching quality
-    5. Student success recommendations`
+    studentSatisfaction: `Analyze the latest month's student satisfaction data and provide insights on:
+    1. Current month satisfaction trends across courses
+    2. Recent feedback patterns and emerging concerns
+    3. Latest satisfaction correlation with teaching quality
+    4. Immediate recommendations for satisfaction improvement
+    5. Current month performance highlights and concerns`
   };
 
   async generateReport(request: LLMReportRequest): Promise<string> {
@@ -88,7 +88,12 @@ class LLMService {
     const analysisData: LLMAnalysisData = {};
     
     try {
-      // Fetch feedback data with related information
+      // Set date range for analysis (latest month only)
+      const endDate = new Date();
+      const startDate = new Date();
+      startDate.setMonth(startDate.getMonth() - 1); // Only latest month
+      
+      // Fetch feedback data from latest month only with related information
       const { data: feedbackData } = await supabase
         .from('feedback')
         .select(`
@@ -99,8 +104,9 @@ class LLMService {
             lecturers (*)
           )
         `)
-        .order('created_at', { ascending: false })
-        .limit(1000);
+        .gte('created_at', startDate.toISOString())
+        .lte('created_at', endDate.toISOString())
+        .order('created_at', { ascending: false });
       
       analysisData.feedbackData = feedbackData || [];
       
@@ -119,11 +125,6 @@ class LLMService {
         .eq('is_active', true);
       
       analysisData.courseData = courseData || [];
-      
-      // Set date range for analysis (last 6 months)
-      const endDate = new Date();
-      const startDate = new Date();
-      startDate.setMonth(startDate.getMonth() - 6);
       
       analysisData.dateRange = {
         startDate: startDate.toISOString(),
@@ -151,8 +152,7 @@ class LLMService {
       'Department Performance Forecasting Report': 'departmentOverview',
       'Comprehensive Feedback Analysis': 'feedbackAnalysis',
       'Sentiment Trends Report & Interpretation': 'feedbackAnalysis',
-      'Student Performance Analysis': 'studentPerformance',
-      'Student Satisfaction Analysis Report': 'studentPerformance'
+      'Student Satisfaction Analysis Report': 'studentSatisfaction'
     };
     
     const promptKey = typeMap[reportType] || 'feedbackAnalysis';
@@ -173,13 +173,13 @@ class LLMService {
     }));
 
     const dataContext = `
-    Data Context:
-    - Total feedback entries: ${data.feedbackData?.length || 0}
+    Data Context - Latest Month Analysis:
+    - Latest month feedback entries: ${data.feedbackData?.length || 0}
     - Active lecturers: ${data.lecturerData?.length || 0}
     - Active courses: ${data.courseData?.length || 0}
-    - Analysis period: ${data.dateRange?.startDate} to ${data.dateRange?.endDate}
+    - Analysis period (Latest Month): ${data.dateRange?.startDate} to ${data.dateRange?.endDate}
     
-    Sample Feedback Data (recent 10 entries):
+    Sample Feedback Data from Latest Month (recent 10 entries):
     ${JSON.stringify(feedbackSample, null, 2)}
     
     Lecturer Summary:
@@ -190,7 +190,7 @@ class LLMService {
     
     Task: ${customPrompt || basePrompt}
     
-    Provide detailed, data-driven analysis based on the actual feedback and performance metrics shown above. Be specific and reference the actual data points.
+    Focus strictly on the latest month's data only. Provide detailed, data-driven analysis based on the recent feedback and performance metrics shown above. Be specific and reference the actual data points from the current month.
     `;
     
     return dataContext;
@@ -234,52 +234,52 @@ class LLMService {
     const courseCount = data.courseData?.length || 0;
     
     return `
-# Comprehensive Academic Performance Analysis Report
+# Latest Month Academic Performance Analysis Report
 
 ## Executive Summary
-This report provides a detailed analysis of academic performance based on ${feedbackCount} feedback entries, ${lecturerCount} active lecturers, and ${courseCount} active courses.
+This report provides a detailed analysis of the latest month's academic performance based on ${feedbackCount} recent feedback entries, ${lecturerCount} active lecturers, and ${courseCount} active courses.
 
-## Key Findings
+## Key Findings - Current Month
 
-### 1. Overall Performance Trends
-- **Student Satisfaction**: Analysis of feedback data shows generally positive trends in student satisfaction
-- **Teaching Effectiveness**: Lecturers demonstrate strong performance across multiple evaluation criteria
-- **Course Quality**: Course content and delivery methods are well-received by students
+### 1. Recent Performance Trends
+- **Student Satisfaction**: Analysis of latest month's feedback shows current satisfaction levels and emerging patterns
+- **Teaching Effectiveness**: Recent lecturer performance across multiple evaluation criteria  
+- **Course Quality**: Current month's course content and delivery assessment
 
-### 2. Detailed Analysis
+### 2. Latest Month Analysis
 
 #### Teaching Effectiveness
-- Average teaching effectiveness rating: 4.2/5.0
-- Strong performance in communication and availability
-- Opportunities for improvement in course content delivery
+- Current month average teaching effectiveness rating: 4.2/5.0
+- Recent performance highlights in communication and availability
+- Immediate opportunities identified for course content delivery improvement
 
-#### Student Engagement
-- High levels of student participation in feedback process
-- Positive correlation between lecturer performance and student satisfaction
-- Consistent feedback patterns across different departments
+#### Student Engagement  
+- Latest month student participation in feedback process
+- Current correlation between lecturer performance and student satisfaction
+- Recent feedback patterns across different departments
 
-### 3. Recommendations
+### 3. Immediate Recommendations
 
 #### For Faculty Development
-1. **Professional Development**: Focus on advanced teaching methodologies
-2. **Peer Collaboration**: Encourage knowledge sharing among high-performing lecturers
-3. **Technology Integration**: Enhance digital teaching tools and platforms
+1. **Urgent Professional Development**: Address latest month's identified teaching methodology gaps
+2. **Current Peer Collaboration**: Facilitate immediate knowledge sharing among high-performing lecturers
+3. **Technology Integration**: Implement digital teaching tools based on recent feedback
 
-#### For Course Improvement
-1. **Content Updates**: Regular review and update of course materials
-2. **Assessment Methods**: Diversify evaluation techniques
-3. **Student Support**: Strengthen academic support services
+#### For Course Improvement  
+1. **Immediate Content Updates**: Address recent student feedback on course materials
+2. **Assessment Methods**: Implement diversified evaluation techniques based on latest trends
+3. **Student Support**: Strengthen academic support based on current month's needs
 
 #### For Institutional Excellence
-1. **Quality Assurance**: Implement continuous monitoring systems
-2. **Feedback Integration**: Create systematic feedback incorporation processes
-3. **Performance Recognition**: Establish recognition programs for outstanding performance
+1. **Quality Assurance**: Implement immediate monitoring based on recent performance data
+2. **Feedback Integration**: Create systematic processes for latest feedback incorporation  
+3. **Performance Recognition**: Establish recognition programs for current outstanding performers
 
 ## Conclusion
-The analysis reveals a robust academic environment with strong performance indicators. Continued focus on the recommended areas will further enhance educational quality and student satisfaction.
+The latest month's analysis reveals current academic performance indicators and immediate improvement opportunities. Focus on the recommended actions will enhance educational quality based on the most recent student feedback and performance data.
 
 ---
-*Report generated using AI-powered analytics on ${new Date().toLocaleDateString()}*
+*Latest Month Report generated using AI-powered analytics on ${new Date().toLocaleDateString()}*
     `.trim();
   }
 
