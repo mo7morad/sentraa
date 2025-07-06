@@ -151,14 +151,14 @@ const FeedbackManagement = () => {
     setIsGeneratingInsights(true);
     
     try {
-      console.log('Generating insights for feedback data:', filteredFeedback.length, 'items');
+      console.log('Generating insights for selected feedback item');
       
-      // Use filtered feedback instead of all feedback for more relevant insights
-      const relevantFeedback = filteredFeedback.length > 0 ? filteredFeedback : processedFeedback;
-      
-      if (!relevantFeedback || relevantFeedback.length === 0) {
-        throw new Error('No feedback data available for analysis');
+      // Use only the selected feedback item for focused analysis
+      if (!selectedFeedback) {
+        throw new Error('No feedback item selected for analysis');
       }
+      
+      const relevantFeedback = [selectedFeedback];
 
       // Call the Supabase Edge Function for AI insights
       const { data: response, error } = await supabase.functions.invoke('ai-insights', {
@@ -180,7 +180,7 @@ const FeedbackManagement = () => {
               `${fb.course_offerings.lecturers.first_name} ${fb.course_offerings.lecturers.last_name}` : null,
             category: fb.category_id
           })),
-          customPrompt: `Analyze this feedback data with ${relevantFeedback.length} student responses. Focus on actionable insights for institutional improvement.`
+          customPrompt: `Analyze this specific feedback item from a student. Provide focused, actionable insights for this particular case.`
         }
       });
 
@@ -552,7 +552,7 @@ const FeedbackManagement = () => {
                          </div>
                          <div className="text-center space-y-2">
                            <p className="text-sm font-medium text-foreground">Generating AI Insights...</p>
-                           <p className="text-xs text-muted-foreground">Analyzing {filteredFeedback.length > 0 ? filteredFeedback.length : processedFeedback.length} feedback responses</p>
+                           <p className="text-xs text-muted-foreground">Analyzing selected feedback item</p>
                          </div>
                        </div>
                      )}
