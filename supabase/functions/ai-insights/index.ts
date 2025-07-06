@@ -63,19 +63,19 @@ serve(async (req) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          model: 'gpt-4o',
+          model: 'gpt-4.1-2025-04-14',
           messages: [
             {
               role: 'system',
-              content: 'You are an expert educational data analyst. Provide structured, actionable insights based on the data provided.'
+              content: 'You are a distinguished senior academic administrator and institutional analytics expert with 20+ years of experience in educational leadership. You produce authoritative, data-driven reports for academic governance and strategic decision-making. Your analyses are highly regarded by university leadership for their depth, accuracy, and actionable insights.'
             },
             {
               role: 'user',
               content: prompt
             }
           ],
-          temperature: 0.7,
-          max_tokens: 2048,
+          temperature: 0.3,
+          max_tokens: 4000,
         }),
       }
     );
@@ -201,7 +201,33 @@ IMPROVEMENTS:
       break;
 
     case 'report_generation':
-      basePrompt = `Generate a comprehensive educational analytics report based on the provided data:
+      // For report generation, use the custom prompt as the main instruction
+      if (customPrompt) {
+        basePrompt = `You are a distinguished academic expert and educational analytics consultant producing a comprehensive institutional report.
+
+IMPORTANT INSTRUCTIONS:
+${customPrompt}
+
+CRITICAL REQUIREMENTS:
+• Generate a complete, professional PDF-ready report
+• Use formal academic language appropriate for institutional leadership
+• Include specific data points and statistical analysis
+• Provide evidence-based recommendations
+• Structure the report with clear sections and executive summary
+• Focus exclusively on the provided data timeframe
+• Cite actual data values and metrics in your analysis
+• Ensure recommendations are actionable and specific
+
+FORMATTING REQUIREMENTS:
+• Use markdown formatting suitable for PDF conversion
+• Include proper headings and subheadings
+• Use bullet points and numbered lists for clarity
+• Bold key findings and recommendations
+• Include a professional conclusion section
+
+Generate a comprehensive, authoritative report that demonstrates deep analytical insight and provides strategic value to academic leadership.`;
+      } else {
+        basePrompt = `Generate a comprehensive educational analytics report based on the provided data:
 
 INSTRUCTIONS:
 - Provide executive summary with key findings
@@ -211,9 +237,9 @@ INSTRUCTIONS:
 - Use professional academic language
 - Create a detailed report with clear sections and actionable insights
 
-Generate a comprehensive markdown report that can be converted to PDF.
-`;
-      contextData = `REPORT DATA:\n${JSON.stringify(data, null, 2)}`;
+Generate a comprehensive markdown report that can be converted to PDF.`;
+      }
+      contextData = `INSTITUTIONAL DATA FOR ANALYSIS:\n${JSON.stringify(data, null, 2)}`;
       break;
 
     default:
