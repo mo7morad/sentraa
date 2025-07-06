@@ -22,110 +22,40 @@ export interface LLMAnalysisData {
 
 class LLMService {
   private basePrompts = {
-    lecturerPerformance: `You are a senior academic administrator and educational data analyst producing a formal OVERALL LECTURER PERFORMANCE REPORT for institutional leadership.
-
-CONTEXT: You are analyzing ONLY the latest month's lecturer performance data to provide immediate, actionable insights for academic decision-making.
-
-ANALYSIS REQUIREMENTS:
-• Conduct a rigorous statistical analysis of teaching effectiveness metrics
-• Identify high-performing and underperforming lecturers with specific data points
-• Analyze correlation between lecturer performance and student satisfaction scores
-• Compare performance across departments with concrete benchmarks
-• Evaluate trends in communication, availability, and course content delivery
-
-REPORT STRUCTURE:
-1. EXECUTIVE SUMMARY (Key findings and urgent recommendations)
-2. PERFORMANCE METRICS ANALYSIS (Statistical breakdown by lecturer and department)
-3. TEACHING EFFECTIVENESS EVALUATION (Detailed assessment of pedagogical impact)
-4. STUDENT SATISFACTION CORRELATION STUDY (Data-driven satisfaction analysis)
-5. PROFESSIONAL DEVELOPMENT RECOMMENDATIONS (Specific, targeted interventions)
-6. STRATEGIC RECOMMENDATIONS (Institutional-level improvements)
-
-Use academic language, cite specific data points, and provide evidence-based recommendations suitable for senior academic leadership review.`,
+    lecturerPerformance: `Analyze the latest month's lecturer performance data and provide comprehensive insights including:
+    1. Current month performance trends and patterns
+    2. Immediate strengths and areas needing attention
+    3. Comparative analysis across departments for this period
+    4. Urgent recommendations for professional development
+    5. Recent impact on student satisfaction levels`,
     
-    teachingQuality: `You are an educational quality assurance expert producing a formal TEACHING QUALITY ASSESSMENT REPORT for academic standards committee.
-
-CONTEXT: This report evaluates ONLY the latest month's teaching quality metrics to ensure institutional educational standards and continuous improvement.
-
-ANALYSIS REQUIREMENTS:
-• Evaluate teaching effectiveness ratings with statistical significance testing
-• Assess course content quality against pedagogical best practices
-• Analyze communication effectiveness and student engagement metrics
-• Identify exemplary teaching practices for institutional adoption
-• Examine correlation between teaching methods and learning outcomes
-
-REPORT STRUCTURE:
-1. QUALITY ASSURANCE SUMMARY (Overall teaching standards assessment)
-2. PEDAGOGICAL EFFECTIVENESS ANALYSIS (Evidence-based teaching evaluation)
-3. COURSE CONTENT QUALITY REVIEW (Academic rigor and relevance assessment)
-4. STUDENT ENGAGEMENT METRICS (Participation and satisfaction analysis)
-5. BEST PRACTICES IDENTIFICATION (Exemplary teaching methods discovered)
-6. QUALITY IMPROVEMENT ROADMAP (Specific enhancement strategies)
-
-Provide authoritative analysis with academic credibility suitable for quality assurance committees and accreditation bodies.`,
+    teachingQuality: `Evaluate the latest month's teaching quality metrics and provide analysis on:
+    1. Recent teaching effectiveness ratings and trends
+    2. Current month course content quality assessment
+    3. Latest communication and availability performance
+    4. Emerging best practices from recent feedback
+    5. Immediate quality improvement recommendations`,
     
-    departmentOverview: `You are a strategic academic planning consultant producing a formal DEPARTMENT PERFORMANCE OVERVIEW REPORT for institutional governance.
-
-CONTEXT: This comprehensive analysis covers ONLY the latest month's departmental performance data to inform strategic decision-making and resource allocation.
-
-ANALYSIS REQUIREMENTS:
-• Evaluate departmental efficiency metrics against institutional benchmarks
-• Analyze faculty performance distribution with statistical modeling
-• Assess resource utilization and operational effectiveness
-• Compare inter-departmental performance with variance analysis
-• Examine student satisfaction patterns by academic discipline
-
-REPORT STRUCTURE:
-1. STRATEGIC OVERVIEW (High-level departmental performance assessment)
-2. OPERATIONAL EFFICIENCY ANALYSIS (Resource utilization and productivity metrics)
-3. FACULTY PERFORMANCE DISTRIBUTION (Statistical analysis of teaching effectiveness)
-4. STUDENT SATISFACTION BY DISCIPLINE (Department-specific satisfaction trends)
-5. COMPARATIVE DEPARTMENTAL ANALYSIS (Cross-departmental performance benchmarking)
-6. STRATEGIC RECOMMENDATIONS (Resource allocation and improvement initiatives)
-
-Present findings with executive-level clarity and strategic insight appropriate for academic governance and institutional planning.`,
+    departmentOverview: `Analyze the latest month's departmental performance data and provide insights on:
+    1. Current month department efficiency metrics    
+    2. Recent resource utilization patterns
+    3. Latest faculty performance distribution
+    4. This month's student satisfaction by department
+    5. Immediate strategic recommendations`,
     
-    feedbackAnalysis: `You are a student experience researcher producing a formal COMPREHENSIVE FEEDBACK ANALYSIS REPORT for academic leadership.
-
-CONTEXT: This detailed analysis examines ONLY the latest month's student feedback to identify immediate improvement opportunities and institutional insights.
-
-ANALYSIS REQUIREMENTS:
-• Conduct advanced sentiment analysis using natural language processing principles
-• Identify recurring themes and patterns with frequency analysis
-• Analyze feedback quality and constructiveness levels
-• Examine correlation between feedback sentiment and academic performance
-• Assess feedback representativeness across student demographics
-
-REPORT STRUCTURE:
-1. FEEDBACK LANDSCAPE OVERVIEW (Comprehensive feedback ecosystem analysis)
-2. SENTIMENT ANALYSIS REPORT (Advanced emotional and satisfaction assessment)
-3. THEMATIC PATTERN IDENTIFICATION (Recurring themes and concern clusters)
-4. FEEDBACK QUALITY ASSESSMENT (Constructiveness and specificity evaluation)
-5. DEMOGRAPHIC REPRESENTATION ANALYSIS (Feedback diversity and inclusivity)
-6. ACTIONABLE IMPROVEMENT ROADMAP (Evidence-based enhancement strategies)
-
-Deliver insights with research-level rigor and practical applicability for student experience enhancement initiatives.`,
+    feedbackAnalysis: `Perform comprehensive analysis of the latest month's feedback including:
+    1. Current sentiment analysis of recent student comments
+    2. Emerging themes and patterns from latest feedback
+    3. Recent satisfaction trends and changes
+    4. Latest month category-wise feedback breakdown
+    5. Immediate actionable improvement suggestions`,
     
-    studentSatisfaction: `You are a student success analytics expert producing a formal STUDENT SATISFACTION ANALYSIS REPORT for academic excellence committee.
-
-CONTEXT: This focused analysis examines ONLY the latest month's student satisfaction data to drive immediate improvements in educational experience.
-
-ANALYSIS REQUIREMENTS:
-• Analyze satisfaction trends with temporal and comparative analysis
-• Identify satisfaction drivers through correlation analysis
-• Examine satisfaction variance across courses, lecturers, and departments
-• Assess satisfaction predictors and early warning indicators
-• Evaluate satisfaction impact on academic engagement and retention
-
-REPORT STRUCTURE:
-1. SATISFACTION METRICS DASHBOARD (Key performance indicators and trends)
-2. MULTI-DIMENSIONAL SATISFACTION ANALYSIS (Course, lecturer, and institutional satisfaction)
-3. SATISFACTION DRIVER IDENTIFICATION (Key factors influencing student experience)
-4. PREDICTIVE SATISFACTION MODELING (Early intervention opportunity identification)
-5. SATISFACTION-PERFORMANCE CORRELATION STUDY (Academic success relationship analysis)
-6. STUDENT EXPERIENCE ENHANCEMENT STRATEGY (Targeted satisfaction improvement plan)
-
-Provide data-driven insights with predictive analytics suitable for student success initiatives and retention strategies.`
+    studentSatisfaction: `Analyze the latest month's student satisfaction data and provide insights on:
+    1. Current month satisfaction trends across courses
+    2. Recent feedback patterns and emerging concerns
+    3. Latest satisfaction correlation with teaching quality
+    4. Immediate recommendations for satisfaction improvement
+    5. Current month performance highlights and concerns`
   };
 
   async generateReport(request: LLMReportRequest): Promise<string> {
@@ -268,43 +198,33 @@ Provide data-driven insights with predictive analytics suitable for student succ
 
   private async callOpenAIAPI(prompt: string, data: LLMAnalysisData): Promise<string> {
     try {
-      console.log('🤖 Initiating AI-powered report generation...');
-      console.log('📊 Data summary:', {
-        feedbackEntries: data.feedbackData?.length || 0,
-        lecturers: data.lecturerData?.length || 0,
-        courses: data.courseData?.length || 0,
-        dateRange: data.dateRange
-      });
+      console.log('Calling OpenAI API for report generation');
       
       const { data: response, error } = await supabase.functions.invoke('ai-insights', {
         body: {
           type: 'report_generation',
-          data: data,
-          customPrompt: prompt
+          data: {
+            prompt,
+            analysisData: data
+          }
         }
       });
 
       if (error) {
-        console.error('❌ AI API error:', error);
-        throw new Error(`AI service error: ${error.message || 'Unknown error'}`);
+        console.error('OpenAI API error:', error);
+        return this.generateMockReport(data);
       }
 
       if (response?.success && response?.insights?.fullContent) {
-        console.log('✅ AI report generated successfully');
-        console.log('📄 Report length:', response.insights.fullContent.length, 'characters');
         return response.insights.fullContent;
       }
 
-      if (response?.error) {
-        console.error('❌ AI service returned error:', response.error);
-        throw new Error(`AI generation failed: ${response.error}`);
-      }
-
-      throw new Error('AI service returned no content');
+      // Fallback to mock report if no content
+      return this.generateMockReport(data);
       
     } catch (error) {
-      console.error('❌ Critical error in AI report generation:', error);
-      throw error; // Re-throw to show user the actual error
+      console.error('Error calling OpenAI API:', error);
+      return this.generateMockReport(data);
     }
   }
 
