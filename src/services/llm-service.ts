@@ -168,6 +168,7 @@ Provide data-driven insights with predictive analytics suitable for student succ
       startDate.setMonth(startDate.getMonth() - 1); // Only latest month
       
       // Fetch feedback data from latest month only with related information
+      // LIMIT to 100 entries to avoid token limits
       const { data: feedbackData } = await supabase
         .from('feedback')
         .select(`
@@ -180,7 +181,8 @@ Provide data-driven insights with predictive analytics suitable for student succ
         `)
         .gte('created_at', startDate.toISOString())
         .lte('created_at', endDate.toISOString())
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false })
+        .limit(100); // Limit to 100 most recent entries to prevent token overflow
       
       analysisData.feedbackData = feedbackData || [];
       
@@ -205,7 +207,7 @@ Provide data-driven insights with predictive analytics suitable for student succ
         endDate: endDate.toISOString()
       };
       
-      console.log('Fetched analysis data:', {
+      console.log('Fetched analysis data (limited for token constraints):', {
         feedbackCount: analysisData.feedbackData?.length,
         lecturerCount: analysisData.lecturerData?.length,
         courseCount: analysisData.courseData?.length
@@ -234,16 +236,16 @@ Provide data-driven insights with predictive analytics suitable for student succ
   }
 
   private preparePrompt(basePrompt: string, data: LLMAnalysisData, customPrompt?: string): string {
-    // Include actual data samples for more specific insights
-    const feedbackSample = data.feedbackData?.slice(0, 10).map(f => ({
+    // Include actual data samples for more specific insights, but limit size for token constraints
+    const feedbackSample = data.feedbackData?.slice(0, 5).map(f => ({
       overall_rating: f.overall_rating,
       teaching_effectiveness: f.teaching_effectiveness,
       course_content: f.course_content,
       communication: f.communication,
       availability: f.availability,
-      positive_feedback: f.positive_feedback?.substring(0, 200),
-      improvement_suggestions: f.improvement_suggestions?.substring(0, 200),
-      additional_comments: f.additional_comments?.substring(0, 200)
+      positive_feedback: f.positive_feedback?.substring(0, 100) || 'N/A',
+      improvement_suggestions: f.improvement_suggestions?.substring(0, 100) || 'N/A',
+      additional_comments: f.additional_comments?.substring(0, 100) || 'N/A'
     }));
 
     const dataContext = `
@@ -253,14 +255,14 @@ Provide data-driven insights with predictive analytics suitable for student succ
     - Active courses: ${data.courseData?.length || 0}
     - Analysis period (Latest Month): ${data.dateRange?.startDate} to ${data.dateRange?.endDate}
     
-    Sample Feedback Data from Latest Month (recent 10 entries):
+    Sample Feedback Data from Latest Month (recent 5 entries):
     ${JSON.stringify(feedbackSample, null, 2)}
     
     Lecturer Summary:
-    ${data.lecturerData?.slice(0, 5).map(l => `${l.first_name} ${l.last_name} - ${l.department_id} - ${l.specialization || 'General'}`).join('\n')}
+    ${data.lecturerData?.slice(0, 3).map(l => `${l.first_name} ${l.last_name} - Dept: ${l.department_id}`).join('\n')}
     
     Course Summary:
-    ${data.courseData?.slice(0, 5).map(c => `${c.course_code}: ${c.course_name} (${c.credits} credits)`).join('\n')}
+    ${data.courseData?.slice(0, 3).map(c => `${c.course_code}: ${c.course_name}`).join('\n')}
     
     Task: ${customPrompt || basePrompt}
     
@@ -272,13 +274,16 @@ Provide data-driven insights with predictive analytics suitable for student succ
 
   private async callOpenAIAPI(prompt: string, data: LLMAnalysisData): Promise<string> {
     try {
-      console.log('🤖 Initiating AI-powered report generation...');
-      console.log('📊 Data summary:', {
+      console.log('🤖 Starting AI API call for report generation...');
+      console.log('📊 Data being sent to AI:', {
         feedbackEntries: data.feedbackData?.length || 0,
         lecturers: data.lecturerData?.length || 0,
         courses: data.courseData?.length || 0,
-        dateRange: data.dateRange
+        dateRange: data.dateRange,
+        promptLength: prompt.length
       });
+      
+      console.log('🔗 Calling Supabase edge function: ai-insights');
       
       const { data: response, error } = await supabase.functions.invoke('ai-insights', {
         body: {
@@ -288,30 +293,36 @@ Provide data-driven insights with predictive analytics suitable for student succ
         }
       });
 
+      console.log('📡 AI API Response received:', { 
+        success: response?.success, 
+        hasError: !!error,
+        hasContent: !!response?.insights?.fullContent 
+      });
+
       if (error) {
-        console.error('❌ AI API error, falling back to mock report:', error);
-        console.log('🔄 Generating fallback report with real data...');
-        return this.generateMockReport(data);
+        console.error('❌ Supabase function error:', error);
+        throw new Error(`API Error: ${error.message || 'Unknown error'}`);
       }
 
       if (response?.success && response?.insights?.fullContent) {
-        console.log('✅ AI report generated successfully');
+        console.log('✅ AI report generated successfully!');
         console.log('📄 Report length:', response.insights.fullContent.length, 'characters');
         return response.insights.fullContent;
       }
 
       if (response?.error) {
-        console.error('❌ AI service returned error, using fallback:', response.error);
-        console.log('🔄 Generating fallback report with real data...');
-        return this.generateMockReport(data);
+        console.error('❌ AI service returned error:', response.error);
+        throw new Error(`AI Error: ${response.error}`);
       }
 
-      console.log('🔄 No AI content returned, generating fallback report...');
-      return this.generateMockReport(data);
+      console.error('❌ No content returned from AI service');
+      throw new Error('AI service returned no content');
       
     } catch (error) {
-      console.error('❌ AI service unavailable, generating fallback report:', error);
-      console.log('🔄 Using mock report generation with real data...');
+      console.error('❌ Critical AI API error:', error);
+      
+      // Only use fallback after a real error, not as default behavior
+      console.log('🔄 Using fallback report due to AI service failure');
       return this.generateMockReport(data);
     }
   }
