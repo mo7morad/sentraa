@@ -185,7 +185,7 @@ Provide data-driven insights with predictive analytics suitable for student succ
       startDate.setMonth(startDate.getMonth() - 1); // Only latest month
       
       // Fetch feedback data from latest month only with related information
-      // LIMIT to 100 entries to avoid token limits
+      // LIMIT to 20 entries to stay within token limits (25K token budget)
       const { data: feedbackData } = await supabase
         .from('feedback')
         .select(`
@@ -199,7 +199,7 @@ Provide data-driven insights with predictive analytics suitable for student succ
         .gte('created_at', startDate.toISOString())
         .lte('created_at', endDate.toISOString())
         .order('created_at', { ascending: false })
-        .limit(100); // Limit to 100 most recent entries to prevent token overflow
+        .limit(20); // Drastically reduced to prevent token overflow
       
       analysisData.feedbackData = feedbackData || [];
       
@@ -253,37 +253,34 @@ Provide data-driven insights with predictive analytics suitable for student succ
   }
 
   private preparePrompt(basePrompt: string, data: LLMAnalysisData, customPrompt?: string): string {
-    // Include actual data samples for more specific insights, but limit size for token constraints
-    const feedbackSample = data.feedbackData?.slice(0, 5).map(f => ({
-      overall_rating: f.overall_rating,
-      teaching_effectiveness: f.teaching_effectiveness,
-      course_content: f.course_content,
+    // Minimize data to stay within token budget - only essential metrics
+    const feedbackSample = data.feedbackData?.slice(0, 3).map(f => ({
+      rating: f.overall_rating,
+      teaching: f.teaching_effectiveness,
+      content: f.course_content,
       communication: f.communication,
-      availability: f.availability,
-      positive_feedback: f.positive_feedback?.substring(0, 100) || 'N/A',
-      improvement_suggestions: f.improvement_suggestions?.substring(0, 100) || 'N/A',
-      additional_comments: f.additional_comments?.substring(0, 100) || 'N/A'
+      positive: f.positive_feedback?.substring(0, 50) || 'N/A',
+      improvements: f.improvement_suggestions?.substring(0, 50) || 'N/A'
     }));
 
     const dataContext = `
-    Data Context - Latest Month Analysis:
-    - Latest month feedback entries: ${data.feedbackData?.length || 0}
-    - Active lecturers: ${data.lecturerData?.length || 0}
-    - Active courses: ${data.courseData?.length || 0}
-    - Analysis period (Latest Month): ${data.dateRange?.startDate} to ${data.dateRange?.endDate}
-    
-    Sample Feedback Data from Latest Month (recent 5 entries):
-    ${JSON.stringify(feedbackSample, null, 2)}
-    
-    Lecturer Summary:
-    ${data.lecturerData?.slice(0, 3).map(l => `${l.first_name} ${l.last_name} - Dept: ${l.department_id}`).join('\n')}
-    
-    Course Summary:
-    ${data.courseData?.slice(0, 3).map(c => `${c.course_code}: ${c.course_name}`).join('\n')}
-    
-    Task: ${customPrompt || basePrompt}
-    
-    Focus strictly on the latest month's data only. Provide detailed, data-driven analysis based on the recent feedback and performance metrics shown above. Be specific and reference the actual data points from the current month.
+ANALYSIS DATA (Latest Month):
+- Feedback entries: ${data.feedbackData?.length || 0}
+- Active lecturers: ${data.lecturerData?.length || 0}
+- Active courses: ${data.courseData?.length || 0}
+
+SAMPLE FEEDBACK (3 entries):
+${JSON.stringify(feedbackSample, null, 1)}
+
+TASK: ${customPrompt || basePrompt}
+
+IMPORTANT OUTPUT REQUIREMENTS:
+- Write in clear, professional academic language
+- Use proper headings and structure for PDF conversion
+- Avoid unnecessary symbols, asterisks, or formatting characters
+- Generate a clean, readable report suitable for institutional leadership
+- Keep content concise but authoritative
+- Focus on actionable insights and specific recommendations
     `;
     
     return dataContext;

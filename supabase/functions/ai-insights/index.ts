@@ -67,15 +67,15 @@ serve(async (req) => {
           messages: [
             {
               role: 'system',
-              content: 'You are a distinguished senior academic administrator and institutional analytics expert with 20+ years of experience in educational leadership. You produce authoritative, data-driven reports for academic governance and strategic decision-making. Your analyses are highly regarded by university leadership for their depth, accuracy, and actionable insights.'
+              content: 'You are a senior academic administrator producing professional institutional reports. Write in clear, formal academic language suitable for PDF conversion. Avoid unnecessary formatting symbols, asterisks, or markdown characters. Use proper headings and structure. Focus on actionable insights with specific data points.'
             },
             {
               role: 'user',
               content: prompt
             }
           ],
-          temperature: 0.3,
-          max_tokens: 4000,
+          temperature: 0.2,
+          max_tokens: 2000,
         }),
       }
     );
