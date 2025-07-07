@@ -129,33 +129,50 @@ Provide data-driven insights with predictive analytics suitable for student succ
   };
 
   async generateReport(request: LLMReportRequest): Promise<string> {
+    console.log('🚀 Starting LLM report generation for:', request);
+    
+    let analysisData;
+    let reportContent;
+    
     try {
-      console.log('Generating LLM report for:', request);
-      
       // Fetch relevant data based on report type
-      const analysisData = await this.fetchAnalysisData(request.categoryId);
+      console.log('📊 Fetching analysis data...');
+      analysisData = await this.fetchAnalysisData(request.categoryId);
+      console.log('✅ Analysis data fetched successfully');
       
       // Get the appropriate base prompt
+      console.log('📝 Preparing prompts...');
       const basePrompt = this.getBasePrompt(request.reportType);
-      
-      // Prepare the final prompt with data context
       const finalPrompt = this.preparePrompt(basePrompt, analysisData, request.customPrompt);
+      console.log('✅ Prompts prepared successfully');
       
-      // Call OpenAI API for report generation (with fallback)
-      const reportContent = await this.callOpenAIAPI(finalPrompt, analysisData);
+      // Call OpenAI API for report generation - THIS IS THE CRITICAL PART
+      console.log('🤖 Attempting AI API call...');
+      reportContent = await this.callOpenAIAPI(finalPrompt, analysisData);
+      console.log('✅ AI API call completed successfully');
       
-      // Store the generated report
-      await this.saveGeneratedReport(request, reportContent);
-      
-      return reportContent;
     } catch (error) {
-      console.error('Error generating LLM report, using final fallback:', error);
-      // Final fallback - generate a basic report
-      const analysisData = await this.fetchAnalysisData(request.categoryId);
-      const reportContent = this.generateMockReport(analysisData);
-      await this.saveGeneratedReport(request, reportContent);
-      return reportContent;
+      console.error('❌ Error during AI report generation:', error);
+      console.log('🔄 Falling back to mock report due to error:', error.message);
+      
+      // Only fall back to mock if we haven't fetched analysis data yet
+      if (!analysisData) {
+        analysisData = await this.fetchAnalysisData(request.categoryId);
+      }
+      reportContent = this.generateMockReport(analysisData);
     }
+    
+    try {
+      // Store the generated report
+      console.log('💾 Saving generated report...');
+      await this.saveGeneratedReport(request, reportContent);
+      console.log('✅ Report saved successfully');
+    } catch (saveError) {
+      console.error('❌ Error saving report:', saveError);
+      // Don't fail the entire operation if saving fails
+    }
+    
+    return reportContent;
   }
 
   private async fetchAnalysisData(categoryId: number): Promise<LLMAnalysisData> {
